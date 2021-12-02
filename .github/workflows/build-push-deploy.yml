@@ -69,10 +69,3 @@ jobs:
         with:
           exec: helm upgrade ${{ env.CHART}} helm/${{ env.CHART}}/ --install --wait --atomic --set=nginx_image.tag=${{needs.build-push.outputs.commit_hash}} --set=node_image.tag=${{needs.build-push.outputs.commit_hash}} --values=helm/${{ env.CHART}}/values.yaml
           kubeconfig: '${{ secrets.KUBECONFIG }}'
-
-      - name: Get connection port
-        uses: actions-hub/kubectl@master
-        env:
-          KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
-        with:
-          args: get -o jsonpath="{.spec.ports[0].nodePort}" services ${{ env.CHART}}
