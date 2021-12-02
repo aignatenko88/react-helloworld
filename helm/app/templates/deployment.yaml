@@ -33,7 +33,6 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
-              hostPort: 80
           livenessProbe:
             tcpSocket:
               port: http
