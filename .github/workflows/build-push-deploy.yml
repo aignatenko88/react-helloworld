@@ -19,6 +19,8 @@ jobs:
          - service: nginx
            registry: shefeg/nginx
            cache: shefeg/nginx:cache
+    env:
+      CHART: app
 
     steps:
       - name: Setup docker context for buildx
@@ -65,5 +67,11 @@ jobs:
       - name: Deploy
         uses: WyriHaximus/github-action-helm3@v2
         with:
-          exec: helm upgrade app helm/app/ --install --wait --atomic --set=nginx_image.tag=${{needs.build-push.outputs.commit_hash}} --set=node_image.tag=${{needs.build-push.outputs.commit_hash}} --values=helm/app/values.yaml
+          exec: helm upgrade ${{ env.CHART}} helm/${{ env.CHART}}/ --install --wait --atomic --set=nginx_image.tag=${{needs.build-push.outputs.commit_hash}} --set=node_image.tag=${{needs.build-push.outputs.commit_hash}} --values=helm/${{ env.CHART}}/values.yaml
           kubeconfig: '${{ secrets.KUBECONFIG }}'
+
+      - name: Get connection port
+        uses: actions-hub/kubectl@master
+        with:
+          kubeconfig: '${{ secrets.KUBECONFIG }}'
+          args: get -o jsonpath="{.spec.ports[0].nodePort}" services ${{ env.CHART}}
