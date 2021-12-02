@@ -72,6 +72,7 @@ jobs:
 
       - name: Get connection port
         uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
         with:
-          kubeconfig: '${{ secrets.KUBECONFIG }}'
           args: get -o jsonpath="{.spec.ports[0].nodePort}" services ${{ env.CHART}}
