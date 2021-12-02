@@ -5,7 +5,7 @@ class App extends React.Component {
     return (
       <div id="over">
           <span class="Centerer"></span>
-          <img class="Centered" src="demo_pic.png" />
+          <img class="Centered" src="demo_picture.png" />
       </div>
     );
   }
