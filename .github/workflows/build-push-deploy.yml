@@ -65,5 +65,5 @@ jobs:
       - name: Deploy
         uses: WyriHaximus/github-action-helm3@v2
         with:
-          exec: helm upgrade app helm/app/ --install --wait --atomic --set=nginx_image.tag={{needs.build-push.outputs.commit_hash}} --set=node_image.tag={{needs.build-push.outputs.commit_hash}} --values=helm/app/values.yaml
+          exec: helm upgrade app helm/app/ --install --wait --atomic --set=nginx_image.tag=${{needs.build-push.outputs.commit_hash}} --set=node_image.tag=${{needs.build-push.outputs.commit_hash}} --values=helm/app/values.yaml
           kubeconfig: '${{ secrets.KUBECONFIG }}'
