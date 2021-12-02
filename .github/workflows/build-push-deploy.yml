@@ -1,0 +1,69 @@
+name: build-push-deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-push:
+    runs-on: ubuntu:latest
+    outputs:
+      commit_hash: ${{ steps.commit_hash.outputs.commit_hash }}
+    strategy:
+      matrix:
+       include:
+         - service: node
+           registry: shefeg/node
+           cache: shefeg/node:cache
+         - service: nginx
+           registry: shefeg/nginx
+           cache: shefeg/nginx:cache
+
+    steps:
+      - name: Setup docker context for buildx
+        id: buildx-context
+        run: |
+          docker context create builders
+
+      - name: Setup docker buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          endpoint: builders
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: actions/checkout@v2
+
+      - id: commit_hash
+        run: echo "::set-output name=commit_hash::${GITHUB_SHA::7}"
+
+      - name: Build and push image
+        uses: docker/build-push-action@v2
+        env:
+          DOCKER_BUILDKIT: 1
+        with:
+          context: .
+          file: docker/${{ matrix.service }}/Dockerfile
+          push: true
+          cache-from: type=registry,ref=${{ matrix.cache }}
+          cache-to: type=registry,ref=${{ matrix.cache }},mode=max
+          tags: |
+            ${{ matrix.registry }}:${{ steps.commit_hash.outputs.commit_hash }}
+
+  deploy:
+    runs-on: ubuntu:latest
+    needs: build-push
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Deploy
+        uses: WyriHaximus/github-action-helm3@v2
+        with:
+          exec: helm upgrade app helm/app/ --install --wait --atomic --set=nginx_image.tag={{needs.build-push.outputs.commit_hash}} --set=node_image.tag={{needs.build-push.outputs.commit_hash}} --values=helm/app/values.yaml
+          kubeconfig: '${{ secrets.KUBECONFIG }}'

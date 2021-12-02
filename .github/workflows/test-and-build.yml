@@ -1,0 +1,48 @@
+name: test-and-build
+
+on:
+  pull_request:
+
+jobs:
+  test-and-build:
+    runs-on: [self-hosted, linux, x64, me-organic, stage]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.7.0
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install npm
+        run: npm install -g npm@${{ env.NPM_VERSION }}
+        env:
+          NPM_VERSION: 8.1.4
+
+      - name: npm install
+        run: npm i --legacy-peer-deps
+
+      - name: Run test
+        run: npm run test:ci
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: coverage/junit.xml
+
+      - name: Run build
+        run: npm run build:amomama.com

@@ -1,0 +1,43 @@
+replicaCount: 1
+
+node_image:
+  repository: shefeg/node
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+nginx_image:
+  repository: shefeg/nginx
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+
+nameOverride: "app"
+fullnameOverride: "app"
+
+serviceAccount:
+  create: false
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+
+resources: {}
+
+autoscaling:
+  enabled: false
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
