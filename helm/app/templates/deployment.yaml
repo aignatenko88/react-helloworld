@@ -42,6 +42,7 @@ spec:
             httpGet:
               path: /
               port: https
+              scheme: HTTPS
         - name: node
           image: "{{ .Values.node_image.repository }}:{{ .Values.node_image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: IfNotPresent
