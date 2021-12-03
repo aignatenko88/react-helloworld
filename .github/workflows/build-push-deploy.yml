@@ -75,7 +75,9 @@ jobs:
           version: 'latest'
 
       - name: Get NodePort
-        run: echo "NODE_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services ${{ env.CHART}} --kubeconfig ${{ secrets.KUBECONFIG }} )" >> $GITHUB_ENV
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" > /tmp/kubeconfig.yaml
+          echo "NODE_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services ${{ env.CHART}} --kubeconfig /tmp/kubeconfig.yaml)" >> $GITHUB_ENV
 
       - name: Site endpoint
         run: echo "https://demo.github.actions:${{env.NODE_PORT}}"
