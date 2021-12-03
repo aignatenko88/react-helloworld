@@ -10,7 +10,7 @@ on:
 
 jobs:
   unit-tests:
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip_ci') }}
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip_tests') }}
     runs-on: ubuntu-latest
 
     steps:
