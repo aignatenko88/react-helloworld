@@ -69,3 +69,13 @@ jobs:
         with:
           exec: helm upgrade ${{ env.CHART}} helm/${{ env.CHART}}/ --install --wait --atomic --set=nginx_image.tag=${{needs.build-push.outputs.commit_hash}} --set=node_image.tag=${{needs.build-push.outputs.commit_hash}} --values=helm/${{ env.CHART}}/values.yaml
           kubeconfig: '${{ secrets.KUBECONFIG }}'
+
+      - uses: azure/setup-kubectl@v1
+        with:
+          version: 'latest'
+
+      - name: Get NodePort
+        run: echo "NODE_PORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services ${{ env.CHART}} --kubeconfig ${{ secrets.KUBECONFIG }} )" >> $GITHUB_ENV
+
+      - name: Site endpoint
+        run: echo "https://demo.github.actions:${{env.NODE_PORT}}"
