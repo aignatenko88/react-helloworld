@@ -1,7 +1,8 @@
 name: unit-tests
 
 on:
-  pull_request:
+  repository_dispatch:
+    types: [opened, deleted]
 
 jobs:
   unit-tests:

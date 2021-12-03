@@ -38,11 +38,6 @@ spec:
               port: https
             initialDelaySeconds: 5
             periodSeconds: 20
-          readinessProbe:
-            httpGet:
-              path: /
-              port: https
-              scheme: HTTPS
         - name: node
           image: "{{ .Values.node_image.repository }}:{{ .Values.node_image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: IfNotPresent
