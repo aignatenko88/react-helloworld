@@ -26,7 +26,6 @@ securityContext: {}
 
 service:
   type: NodePort
-  nodePort: 30001
 
 ingress:
   enabled: false
