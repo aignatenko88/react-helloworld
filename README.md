@@ -104,4 +104,3 @@ first, you should install node and npm.
 
 ---
 if you clone this repository to local, just `npm install` and `npm start`.
-
